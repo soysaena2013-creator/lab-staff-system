@@ -4,7 +4,8 @@ import pandas as pd
 # ลิงก์ข้อมูลจาก Google Sheets (Publish to web)
 CSV_URLS = {
     "profile": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=0&single=true&output=csv",
-    "training": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=949946920&single=true&output=csv",
+    # *** นำลิงก์ของ "ประวัติการฝึกอบรม" มาวางแทนที่ลิงก์ด้านล่างนี้ ***
+    "training": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=1403147110&single=true&output=csv",
     "license": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=974412732&single=true&output=csv"
 }
 
@@ -28,7 +29,6 @@ if menu == "ข้อมูลทั่วไป":
 
 elif menu == "ประวัติการฝึกอบรม":
     st.header("ประวัติการฝึกอบรม")
-    # ใช้คีย์ "training" ให้ตรงกับที่กำหนดไว้ใน CSV_URLS
     df = load_data("training")
     st.dataframe(df, hide_index=True, use_container_width=True)
 
