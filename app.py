@@ -31,7 +31,7 @@ if menu == "ข้อมูลทั่วไป":
 
 elif menu == "ประวัติการฝึกอบรม":
     st.header("ประวัติการฝึกอบรมและการศึกษาต่อเนื่อง")
-    df = load_data("training")
+    df = load_data("ประวัติการฝึกอบรมและการศึกษาต่อเนื่อง")
     # ซ่อน Index และแสดงผลเต็มความกว้าง
     st.dataframe(df, hide_index=True, use_container_width=True)
 
