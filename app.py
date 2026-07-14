@@ -31,14 +31,20 @@ df_p = df_profile[df_profile["เลขบัตรประชาชน"].astyp
 df_t = df_training[df_training["เลขบัตรประชาชน"].astype(str) == str(selected_id)]
 df_l = df_license[df_license["เลขบัตรประชาชน"].astype(str) == str(selected_id)]
 
-# แสดงผลแบบกำหนดความสูงให้พอดี
+# กำหนดคอลัมน์ที่ต้องการแสดง (แก้ไขชื่อคอลัมน์ให้ตรงกับไฟล์ของคุณ)
+cols_p = ["คำนำหน้านาม", "ชื่อ สกุล", "วัน เดือน ปีเกิด", "อายุปัจจุบัน (ปี)"]
+cols_t = ["หัวข้อการอบรม", "ปี พ.ศ.", "หน่วยงานผู้จัด", "ชั่วโมงการอบรม"] # เปลี่ยนชื่อคอลัมน์ตามไฟล์จริงของคุณ
+cols_l = ["เลขที่ใบประกอบ", "วันที่ออกใบอนุญาต", "วันหมดอายุ", "สถานะ"]      # เปลี่ยนชื่อคอลัมน์ตามไฟล์จริงของคุณ
+
 st.header(f"ข้อมูลของ: {selected_name}")
 
-# ใช้ container เพื่อแบ่งพื้นที่ให้ดูเต็มหน้าจอ
-with st.container(height=400): # กำหนดความสูง 400px เพื่อให้ไม่ล้นหน้าและใช้พื้นที่คุ้มค่า
+with st.container(height=400):
     if menu == "ข้อมูลทั่วไป":
-        st.dataframe(df_p, hide_index=True, use_container_width=True)
+        st.dataframe(df_p[cols_p], hide_index=True, use_container_width=True)
     elif menu == "ประวัติการฝึกอบรม":
-        st.dataframe(df_t, hide_index=True, use_container_width=True)
+        # ตรวจสอบว่าคอลัมน์มีอยู่จริงก่อนแสดง เพื่อป้องกัน Error
+        available_cols = [c for c in cols_t if c in df_t.columns]
+        st.dataframe(df_t[available_cols], hide_index=True, use_container_width=True)
     elif menu == "ใบประกอบวิชาชีพ":
-        st.dataframe(df_l, hide_index=True, use_container_width=True)
+        available_cols = [c for c in cols_l if c in df_l.columns]
+        st.dataframe(df_l[available_cols], hide_index=True, use_container_width=True)
