@@ -25,14 +25,17 @@ if menu == "ข้อมูลทั่วไป":
     search_term = st.text_input("ค้นหาข้อมูลบุคลากร")
     if search_term:
         df = df[df.apply(lambda row: row.astype(str).str.contains(search_term, case=False).any(), axis=1)]
-    st.dataframe(df)
+    # ซ่อน Index และแสดงผลเต็มความกว้าง
+    st.dataframe(df, hide_index=True, use_container_width=True)
 
 elif menu == "ประวัติการฝึกอบรม":
     st.header("ประวัติการฝึกอบรมและการศึกษาต่อเนื่อง")
     df = load_data("training")
-    st.dataframe(df)
+    # ซ่อน Index และแสดงผลเต็มความกว้าง
+    st.dataframe(df, hide_index=True, use_container_width=True)
 
 elif menu == "ใบประกอบวิชาชีพ":
     st.header("ใบประกอบวิชาชีพ")
     df = load_data("license")
-    st.dataframe(df)
+    # ซ่อน Index และแสดงผลเต็มความกว้าง
+    st.dataframe(df, hide_index=True, use_container_width=True)
