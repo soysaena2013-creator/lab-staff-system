@@ -1,39 +1,27 @@
 import streamlit as st
 import pandas as pd
-# --- เพิ่มส่วนนี้เข้าไปเพื่อให้โปรแกรมรู้จักฟังก์ชัน load_data ---
+
+# ใช้ลิงก์ที่คุณคัดลอกมาจากการ Publish to web
+CSV_URLS = {
+    "profile": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=0&single=true&output=csv",
+    "training": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=949946920&single=true&output=csv",
+    "license": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=974412732&single=true&output=csv"
+}
+
 @st.cache_data(ttl=600)
-def load_data(sheet_name):
-    # ใส่ลิงก์ CSV จากเมนู Publish to web ของคุณที่นี่
-    # คุณต้องสร้างตัวแปรเพื่อเก็บ URL สำหรับแต่ละ sheet
-    URLS = {
-        "Profile": "ลิงก์_CSV_สำหรับ_Profile_ของคุณ",
-        "Training": "ลิงก์_CSV_สำหรับ_Training_ของคุณ"
-    }
-    return pd.read_csv(URLS[sheet_name])
-# โหลดข้อมูลหลัก
-df_staff = load_data("Profile") # ฟังก์ชันดึงข้อมูลจาก Sheets
+def load_data(key):
+    return pd.read_csv(CSV_URLS[key])
 
-st.sidebar.title("ระบบงานเทคนิคการแพทย์")
-selected_name = st.sidebar.selectbox("เลือกรายชื่อบุคลากร", df_staff["ชื่อ สกุล"].unique())
+st.title("ระบบข้อมูลบุคลากร กลุ่มงานเทคนิคการแพทย์")
 
-# กรองข้อมูลตามชื่อที่เลือก
-person = df_staff[df_staff["ชื่อ สกุล"] == selected_name].iloc[0]
+menu = st.sidebar.radio("เมนูหลัก", ["ข้อมูลทั่วไป", "ประวัติการฝึกอบรม", "ใบประกอบวิชาชีพ"])
 
-# สร้าง Tab ข้อมูล
-tab1, tab2, tab3 = st.tabs(["ข้อมูลทั่วไป/ใบประกอบ", "ประวัติสุขภาพ/วัคซีน", "การประเมิน/อบรม"])
+if menu == "ข้อมูลทั่วไป":
+    st.header("ข้อมูลทั่วไป")
+    st.dataframe(load_data("profile"))
 
-with tab1:
-    st.image(person["รูปถ่าย"], width=150)
-    st.write(f"ตำแหน่ง: {person['ตำแหน่ง']}")
-    st.image(person["รูปใบประกอบวิชาชีพ"], caption="ใบประกอบวิชาชีพ") # แสดงรูปไฟล์แนบ
+elif menu == "ประวัติการฝึกอบรม":
+    st.header("ประวัติการฝึกอบรมและการศึกษาต่อเนื่อง")
+    st.dataframe(load_data("training"))
 
-with tab2:
-    st.subheader("ประวัติการตรวจสุขภาพ")
-    # แสดงลิงก์ให้กดดาวน์โหลดไฟล์ผลตรวจสุขภาพ
-    st.link_button("เปิดไฟล์ผลตรวจสุขภาพ", person["Link_ผลตรวจสุขภาพ"])
-    st.write(f"สถานะวัคซีน: {person['วัคซีน']}")
-
-with tab3:
-    st.subheader("ผลการประเมิน/อบรม")
-    st.write(f"ผลคะแนนสอบล่าสุด: {person['คะแนนสอบออนไลน์']}")
-    st.write(f"ความต้องการการอบรม (Training Needs): {person['Training_Needs']}")
+# ทำแบบเดียวกันสำหรับเมนูอื่นๆ
