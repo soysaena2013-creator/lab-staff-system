@@ -1,6 +1,15 @@
 import streamlit as st
 import pandas as pd
-
+# --- เพิ่มส่วนนี้เข้าไปเพื่อให้โปรแกรมรู้จักฟังก์ชัน load_data ---
+@st.cache_data(ttl=600)
+def load_data(sheet_name):
+    # ใส่ลิงก์ CSV จากเมนู Publish to web ของคุณที่นี่
+    # คุณต้องสร้างตัวแปรเพื่อเก็บ URL สำหรับแต่ละ sheet
+    URLS = {
+        "Profile": "ลิงก์_CSV_สำหรับ_Profile_ของคุณ",
+        "Training": "ลิงก์_CSV_สำหรับ_Training_ของคุณ"
+    }
+    return pd.read_csv(URLS[sheet_name])
 # โหลดข้อมูลหลัก
 df_staff = load_data("Profile") # ฟังก์ชันดึงข้อมูลจาก Sheets
 
