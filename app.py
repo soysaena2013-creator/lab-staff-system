@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-# ลิงก์ข้อมูล
+# ลิงก์ข้อมูลจาก Google Sheets
 CSV_URLS = {
     "profile": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=0&single=true&output=csv",
     "training": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=949946920&single=true&output=csv",
@@ -24,6 +24,7 @@ user_options = df_profile.set_index("เลขบัตรประชาชน"
 selected_id = st.sidebar.selectbox("เลือกบุคลากร:", options=user_options.keys(), format_func=lambda x: user_options[x])
 selected_name = user_options[selected_id]
 
+# เมนู
 menu = st.sidebar.radio("เมนู", ["ข้อมูลทั่วไป", "ประวัติการฝึกอบรม", "ใบประกอบวิชาชีพ"])
 
 # กรองข้อมูล
@@ -31,20 +32,30 @@ df_p = df_profile[df_profile["เลขบัตรประชาชน"].astyp
 df_t = df_training[df_training["เลขบัตรประชาชน"].astype(str) == str(selected_id)]
 df_l = df_license[df_license["เลขบัตรประชาชน"].astype(str) == str(selected_id)]
 
-# กำหนดคอลัมน์ที่ต้องการแสดง (แก้ไขชื่อคอลัมน์ให้ตรงกับไฟล์ของคุณ)
-cols_p = ["คำนำหน้านาม", "ชื่อ สกุล", "วัน เดือน ปีเกิด", "อายุปัจจุบัน (ปี)"]
-cols_t = ["หัวข้อการอบรม", "ปี พ.ศ.", "หน่วยงานผู้จัด", "ชั่วโมงการอบรม"] # เปลี่ยนชื่อคอลัมน์ตามไฟล์จริงของคุณ
-cols_l = ["เลขที่ใบประกอบ", "วันที่ออกใบอนุญาต", "วันหมดอายุ", "สถานะ"]      # เปลี่ยนชื่อคอลัมน์ตามไฟล์จริงของคุณ
-
+# แสดงผลแบบแนวตั้ง
 st.header(f"ข้อมูลของ: {selected_name}")
 
-with st.container(height=400):
-    if menu == "ข้อมูลทั่วไป":
-        st.dataframe(df_p[cols_p], hide_index=True, use_container_width=True)
-    elif menu == "ประวัติการฝึกอบรม":
-        # ตรวจสอบว่าคอลัมน์มีอยู่จริงก่อนแสดง เพื่อป้องกัน Error
-        available_cols = [c for c in cols_t if c in df_t.columns]
-        st.dataframe(df_t[available_cols], hide_index=True, use_container_width=True)
-    elif menu == "ใบประกอบวิชาชีพ":
-        available_cols = [c for c in cols_l if c in df_l.columns]
-        st.dataframe(df_l[available_cols], hide_index=True, use_container_width=True)
+if menu == "ข้อมูลทั่วไป":
+    if not df_p.empty:
+        # ใช้ .T เพื่อเปลี่ยนตารางเป็นแนวตั้ง
+        st.write(df_p.iloc[0].T)
+    else:
+        st.write("ไม่พบข้อมูล")
+
+elif menu == "ประวัติการฝึกอบรม":
+    if not df_t.empty:
+        for i in range(len(df_t)):
+            st.subheader(f"รายการที่ {i+1}")
+            st.write(df_t.iloc[i].T)
+            st.divider()
+    else:
+        st.write("ไม่พบข้อมูลการฝึกอบรม")
+
+elif menu == "ใบประกอบวิชาชีพ":
+    if not df_l.empty:
+        for i in range(len(df_l)):
+            st.subheader(f"รายการที่ {i+1}")
+            st.write(df_l.iloc[i].T)
+            st.divider()
+    else:
+        st.write("ไม่พบข้อมูลใบประกอบวิชาชีพ")
