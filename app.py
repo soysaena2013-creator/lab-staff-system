@@ -32,9 +32,19 @@ menu = st.sidebar.radio("เมนู", ["ข้อมูลทั่วไป",
 st.header(f"ข้อมูลของ: {user_options[selected_id]}")
 
 # กรองข้อมูล
-if menu == "ข้อมูลทั่วไป":
-    df_p = df_profile[df_profile["เลขบัตรประชาชน"] == selected_id]
-    st.write(df_p.iloc[0].T if not df_p.empty else "ไม่พบข้อมูล")
+elif menu == "ข้อมูลทั่วไป":
+    if not df_p.empty:
+        # ดึงข้อมูลมาเป็น Series
+        data_to_show = df_p.iloc[0].T
+        
+        # ตรวจสอบว่ามีคอลัมน์ "เบอร์โทรศัพท์" หรือไม่
+        if "เบอร์โทรศัพท์" in data_to_show.index:
+            phone_val = str(data_to_show["เบอร์โทรศัพท์"])
+            # ถ้าเลขเบอร์โทรสั้นกว่า 10 หลัก ให้เติม 0 ข้างหน้า
+            if len(phone_val) < 10:
+                data_to_show["เบอร์โทรศัพท์"] = phone_val.zfill(10)
+        
+        st.write(data_to_show)
 
 elif menu == "ประวัติการฝึกอบรม":
     df_t = df_training[df_training["เลขบัตรประชาชน"] == selected_id]
