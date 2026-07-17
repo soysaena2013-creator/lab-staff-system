@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-# เพิ่มลิงก์สำหรับ ExamResults ในนี้
+# ลิงก์ข้อมูลที่สมบูรณ์
 CSV_URLS = {
     "profile": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=0&single=true&output=csv",
     "training": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRNwMjfrUFFtELYMwByAwtV5oWDe0enW7TzTJW_Dl-hjIbxPlCg9LEMahNEc4EgZHvr-XNFIcHPdfNQ/pub?gid=1403147110&single=true&output=csv",
@@ -30,22 +30,24 @@ df_exam = load_data(CSV_URLS["exam"])
 user_options = df_profile.set_index("เลขบัตรประชาชน")["ชื่อ สกุล"].to_dict()
 selected_id = st.sidebar.selectbox("เลือกบุคลากร:", options=list(user_options.keys()), format_func=lambda x: user_options[x])
 
-# เพิ่มเมนู Exam Results
 menu = st.sidebar.radio("เมนู", ["ข้อมูลทั่วไป", "ประวัติการฝึกอบรม", "ใบประกอบวิชาชีพ", "ประวัติการรับวัคซีน", "ประวัติการตรวจสุขภาพประจำปี", "ผลการสอบ (Exam Results)"])
 
 st.header(f"ข้อมูลของ: {user_options[selected_id]}")
 
-# ฟังก์ชันแสดงผลทั่วไป
-def show_data(df, title):
+# ฟังก์ชันแสดงผลแบบเลือกคอลัมน์ได้
+def show_data(df, title, columns_to_show=None):
     filtered_df = df[df["เลขบัตรประชาชน"] == selected_id]
     if not filtered_df.empty:
+        # หากกำหนด columns_to_show ให้เลือกเฉพาะคอลัมน์นั้น[cite: 1]
+        if columns_to_show:
+            filtered_df = filtered_df.iloc[:, columns_to_show]
         for i in range(len(filtered_df)):
             st.write(filtered_df.iloc[i].T)
             st.divider()
     else:
         st.write(f"ไม่พบข้อมูล{title}")
 
-# แสดงผลตามเมนู
+# แสดงผลตามเมนู[cite: 1]
 if menu == "ข้อมูลทั่วไป":
     df_p = df_profile[df_profile["เลขบัตรประชาชน"] == selected_id]
     if not df_p.empty: st.write(df_p.iloc[0].T)
@@ -54,4 +56,5 @@ elif menu == "ประวัติการฝึกอบรม": show_data(df
 elif menu == "ใบประกอบวิชาชีพ": show_data(df_license, "ใบประกอบวิชาชีพ")
 elif menu == "ประวัติการรับวัคซีน": show_data(df_vaccine, "การรับวัคซีน")
 elif menu == "ประวัติการตรวจสุขภาพประจำปี": show_data(df_health, "การตรวจสุขภาพ")
-elif menu == "ผลการสอบ (Exam Results)": show_data(df_exam, "ผลการสอบ")
+# เลือกคอลัมน์ A-D คือดัชนี 0, 1, 2, 3[cite: 1]
+elif menu == "ผลการสอบ (Exam Results)": show_data(df_exam, "ผลการสอบ", columns_to_show=[0, 1, 2, 3])
